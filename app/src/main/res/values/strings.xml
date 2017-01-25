@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Lightstrips</string>
+    <string name="title_main">Sequences</string>
+    <string name="title_activity_sequence">SequenceActivity</string>
+</resources>

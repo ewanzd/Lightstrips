@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ewanzd.lightstrips">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/BrightTheme">
+
+        <activity android:name="com.ewanzd.lightstrips.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.ewanzd.lightstrips.SequenceActivity"
+            android:parentActivityName="com.ewanzd.lightstrips.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/BrightTheme">
+
+        </activity>
+
+        <activity
+            android:name="com.ewanzd.lightstrips.SequenceItemActivity"
+            android:parentActivityName="com.ewanzd.lightstrips.SequenceActivity"
+            android:label="@string/app_name"
+            android:theme="@style/BrightTheme">
+
+        </activity>
+    </application>
+
+</manifest>
