@@ -4,7 +4,7 @@
     android:layout_height="65dp"
     android:layout_margin="10dp"
     android:padding="5dp"
-    android:background="#ECEFEF">
+    android:background="?android:attr/activatedBackgroundIndicator">
 
     <TextView
         android:id="@+id/txv_sequenceName"

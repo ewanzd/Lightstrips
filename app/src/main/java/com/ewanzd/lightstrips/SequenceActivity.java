@@ -50,9 +50,14 @@ public class SequenceActivity extends AppCompatActivity {
         //lv_sequenceItems = (ListView)findViewById(R.id.lv_sequenceitems);
         //adapter = new SequenceItemAdapter(this, sequence.getItems());
         //lv_sequenceItems.setAdapter(adapter);
+    }
 
-        //ActionBar actionBar = getActionBar();
-        //actionBar.setHomeButtonEnabled(true);
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        sequence.setName(txe_sequenceName.getText().toString());
+        dbHandler.updateSequence(sequence);
     }
 
     /*

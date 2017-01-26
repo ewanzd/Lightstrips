@@ -61,6 +61,19 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
         sequence.set_id(id);
     }
 
+    public void updateSequence(Sequence sequence) {
+
+        String query = String.format("UPDATE %1$s " +
+                "SET %2$s=\"%3$s\" " +
+                "WHERE %4$s=%5$d",
+                TABLE_SEQUENCES, COLUMN_SEQUENCE_NAME, sequence.getName(),
+                COLUMN_SEQUENCE_ID, sequence.get_id());
+
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(query);
+        db.close();
+    }
+
     public void deleteSequence(long id) {
 
         String query = String.format("DELETE FROM %1$s WHERE %2$s=\"%3$d\";",

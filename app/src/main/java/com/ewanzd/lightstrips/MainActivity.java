@@ -4,13 +4,17 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,10 +44,8 @@ public class MainActivity extends AppCompatActivity {
         // init Database
         dbHandler = new LightstripsDataBaseHandler(this, null);
 
-        // load sequences
-        sequences = dbHandler.getAllSequences();
-
         // set sequences to adapter
+        sequences = new ArrayList<>();
         adapter = new SequenceAdapter(this, sequences);
 
         // init ListView
@@ -53,8 +55,55 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
                 Sequence sequence = (Sequence)adapter.getItemAtPosition(position);
-
                 startSequenceActivity(sequence.get_id());
+            }
+        });
+        lv_sequence.setLongClickable(true);
+        lv_sequence.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        lv_sequence.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                mode.getMenuInflater().inflate(R.menu.activity_actionmode_delete, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+                switch (item.getItemId()) {
+                    case R.id.delete:
+                        SparseBooleanArray selected = adapter.getSelectedIds();
+                        for (int i = 0; i < selected.size(); i++) {
+                            if (selected.valueAt(i)) {
+                                Sequence selecteditem = adapter.getItem(selected.keyAt(i));
+                                dbHandler.deleteSequence(selecteditem.get_id());
+                                adapter.remove(selecteditem);
+                            }
+                        }
+                        mode.finish();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                mode.getMenu().clear();
+                adapter.removeSelection();
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+
+                final int checkedCount = lv_sequence.getCheckedItemCount();
+                mode.setTitle(checkedCount + " Selected");
+                adapter.toggleSelection(position);
             }
         });
 
@@ -69,9 +118,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        reloadSequences();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_main_actions, menu);
+        inflater.inflate(R.menu.activity_actionmode_delete, menu);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -88,41 +144,13 @@ public class MainActivity extends AppCompatActivity {
         adapter.addAll(sequences);
     }
 
+    /**
+     *
+     * @param sequenceId
+     */
     public void startSequenceActivity(long sequenceId) {
         Intent newActivity = new Intent(MainActivity.this, SequenceActivity.class);
         newActivity.putExtra(EXTRA_SEQUENCE_ID, sequenceId);
         startActivity(newActivity);
     }
-
-    /*
-    @Override
-    public void onStart() {
-        super.onStart();
-        String address = getConfigValue(this, "server_mqtt_address");
-        String port = getConfigValue(this, "server_mqtt_port");
-        String serverAddress = String.format("%1$s:%2$s", address, port);
-
-        SiotSensor sensor = new SiotSensor(
-                Integer.getInteger(getConfigValue(this, "sensor_test_port")),
-                getConfigValue(this, "sensor_test_centerId"),
-                getConfigValue(this, "sensor_test_sensorId"));
-
-        try {
-            siotClientMqtt = new SiotClientMqtt(this, serverAddress);
-            siotClientMqtt.connect();
-            siotClientMqtt.subscribe(sensor);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        try {
-            siotClientMqtt.close();
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-    }*/
 }

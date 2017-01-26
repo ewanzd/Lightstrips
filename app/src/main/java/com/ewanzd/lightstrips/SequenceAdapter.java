@@ -1,12 +1,14 @@
 package com.ewanzd.lightstrips;
 
 import android.content.Context;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -14,7 +16,8 @@ import java.util.List;
  */
 public class SequenceAdapter extends ArrayAdapter<Sequence> {
 
-    //private static final int layoutResourceId = R.layout.main_row;
+    private SparseBooleanArray mSelectedItemsIds;
+    private LayoutInflater inflater;
 
     /**
      *
@@ -23,35 +26,70 @@ public class SequenceAdapter extends ArrayAdapter<Sequence> {
      */
     public SequenceAdapter(Context context, List<Sequence> items) {
         super(context, R.layout.main_row, items);
+
+        mSelectedItemsIds = new SparseBooleanArray();
+        inflater = LayoutInflater.from(context);
     }
 
     /**
      * Fill View with sequence data.
      * @param position Current position.
-     * @param convertView View to fill.
+     * @param view View to fill.
      * @param parent Parent ViewGroup.
      * @return Filled View.
      */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View view, ViewGroup parent) {
 
-        // inflate layout
-        if(convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.main_row, parent, false);
+        final ViewHolder holder;
+
+        if (view == null) {
+            holder = new ViewHolder();
+            view = inflater.inflate(R.layout.main_row, null);
+            holder.txv_name = (TextView) view.findViewById(R.id.txv_sequenceName);
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
         }
 
-        // get object
-        Sequence item = getItem(position);
+        holder.txv_name.setText(getItem(position).getName());
+        return view;
+    }
 
-        // fill layout elements
-        TextView txv_name = (TextView)convertView.findViewById(R.id.txv_sequenceName);
-        txv_name.setText(item.getName());
+    public void toggleSelection(int position) {
+        selectView(position, !mSelectedItemsIds.get(position));
+    }
 
-        // set object as tag
-        convertView.setTag(item);
+    public void removeSelection() {
+        mSelectedItemsIds = new SparseBooleanArray();
+        notifyDataSetChanged();
+    }
 
-        // return View
-        return convertView;
+    public void selectView(int position, boolean value) {
+        if (value)
+            mSelectedItemsIds.put(position, value);
+        else
+            mSelectedItemsIds.delete(position);
+        notifyDataSetChanged();
+    }
+
+    public int getSelectedCount() {
+        return mSelectedItemsIds.size();
+    }
+
+    public SparseBooleanArray getSelectedIds() {
+        return mSelectedItemsIds;
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+
+        mSelectedItemsIds.clear();
+        notifyDataSetChanged();
+    }
+
+    private class ViewHolder {
+        TextView txv_name;
     }
 }
