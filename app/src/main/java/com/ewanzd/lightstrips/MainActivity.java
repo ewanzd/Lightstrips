@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // init Database
-        dbHandler = new LightstripsDataBaseHandler(this, null);
+        dbHandler = new LightstripsDataBaseHandler(this);
 
         // set sequences to adapter
         sequences = new ArrayList<>();
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
                 Sequence sequence = (Sequence)adapter.getItemAtPosition(position);
-                startSequenceActivity(sequence.get_id());
+                startSequenceActivity(sequence.getId());
             }
         });
         lv_sequence.setLongClickable(true);
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < selected.size(); i++) {
                             if (selected.valueAt(i)) {
                                 Sequence selecteditem = adapter.getItem(selected.keyAt(i));
-                                dbHandler.deleteSequence(selecteditem.get_id());
+                                dbHandler.deleteSequence(selecteditem.getId());
                                 adapter.remove(selecteditem);
                             }
                         }

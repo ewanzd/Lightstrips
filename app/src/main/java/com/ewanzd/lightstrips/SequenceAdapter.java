@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,7 +24,7 @@ public class SequenceAdapter extends ArrayAdapter<Sequence> {
      * @param items
      */
     public SequenceAdapter(Context context, List<Sequence> items) {
-        super(context, R.layout.main_row, items);
+        super(context, R.layout.row_main, items);
 
         mSelectedItemsIds = new SparseBooleanArray();
         inflater = LayoutInflater.from(context);
@@ -45,7 +44,7 @@ public class SequenceAdapter extends ArrayAdapter<Sequence> {
 
         if (view == null) {
             holder = new ViewHolder();
-            view = inflater.inflate(R.layout.main_row, null);
+            view = inflater.inflate(R.layout.row_main, null);
             holder.txv_name = (TextView) view.findViewById(R.id.txv_sequenceName);
             view.setTag(holder);
         } else {

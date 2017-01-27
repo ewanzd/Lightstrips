@@ -27,7 +27,7 @@ public class SequenceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sequence);
 
         // init Database
-        dbHandler = new LightstripsDataBaseHandler(this, null);
+        dbHandler = new LightstripsDataBaseHandler(this);
 
         // load transfer data
         Intent intent = getIntent();
