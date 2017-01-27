@@ -1,12 +1,13 @@
 package com.ewanzd.lightstrips;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Sequence {
 
     private long id;
     private String name;
-    private List<SequenceItem> items;
+    private List<SequenceItem> items = new ArrayList<>();
 
     public Sequence() {
     }

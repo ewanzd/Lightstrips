@@ -42,7 +42,7 @@ public class SequenceItemAdapter extends ArrayAdapter<SequenceItem> {
         SequenceItem item = getItem(position);
         if(item.getColor() != 0) holder.layout.setBackgroundColor(item.getColor());
         holder.txv_color_name.setText(String.format("#%06X", 0xFFFFFF & item.getColor()));
-        holder.txv_time.setText(item.getTime());
+        holder.txv_time.setText(String.valueOf(item.getTime()));
         return view;
     }
 

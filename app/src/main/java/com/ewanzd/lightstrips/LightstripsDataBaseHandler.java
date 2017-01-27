@@ -133,8 +133,12 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
         cursor.close();
-
         db.close();
+
+        for (Sequence sequence: sequences) {
+            sequence.setItems(getSequenceItemsBySequenceId(sequence.getId()));
+        }
+
         return sequences;
     }
 
@@ -158,8 +162,9 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
             sequence.setName(name);
         }
         cursor.close();
-
         db.close();
+
+        sequence.setItems(getSequenceItemsBySequenceId(sequence.getId()));
         return sequence;
     }
 

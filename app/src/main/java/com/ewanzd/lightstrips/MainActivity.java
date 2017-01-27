@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.delete:
                         SparseBooleanArray selected = adapter.getSelectedIds();
-                        for (int i = 0; i < selected.size(); i++) {
+                        for (int i = (selected.size() - 1); i >= 0; i--) {
                             if (selected.valueAt(i)) {
                                 Sequence selecteditem = adapter.getItem(selected.keyAt(i));
                                 dbHandler.deleteSequence(selecteditem.getId());
