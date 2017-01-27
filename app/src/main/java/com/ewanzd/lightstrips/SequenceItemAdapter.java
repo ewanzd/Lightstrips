@@ -1,64 +1,87 @@
 package com.ewanzd.lightstrips;
 
-import android.app.Activity;
 import android.content.Context;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by Danilo on 24.01.2017.
- */
+public class SequenceItemAdapter extends ArrayAdapter<SequenceItem> {
 
-public class SequenceItemAdapter extends BaseAdapter {
-
-    private Context context;
-    private List<SequenceItem> items;
+    private SparseBooleanArray mSelectedItemsIds;
+    private LayoutInflater inflater;
 
     public SequenceItemAdapter(Context context, List<SequenceItem> items) {
-        this.context = context;
-        this.items = items;
+        super(context, R.layout.row_sequence, items);
+
+        mSelectedItemsIds = new SparseBooleanArray();
+        inflater = LayoutInflater.from(context);
     }
 
     @Override
-    public int getCount() {
-        return items.size();
-    }
+    public View getView(int position, View view, ViewGroup parent) {
 
-    @Override
-    public Object getItem(int position) {
-        return items.get(position);
-    }
+        final ViewHolder holder;
 
-    @Override
-    public long getItemId(int position) {
-        return items.indexOf(getItem(position));
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-
-        if(convertView == null) {
-
-            // get components by findViewById and link to holder
-
-            SequenceItem row_pos = items.get(position);
-
-            // add data to holder
-
-            convertView.setTag(holder);
-
+        if (view == null) {
+            holder = new ViewHolder();
+            view = inflater.inflate(R.layout.row_sequence, null);
+            holder.layout = (RelativeLayout) view.findViewById(R.id.row_sequence);
+            holder.txv_color_name = (TextView) view.findViewById(R.id.color_name);
+            holder.txv_time = (TextView) view.findViewById(R.id.time);
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
         }
 
-        return convertView;
+        SequenceItem item = getItem(position);
+        if(item.getColor() != 0) holder.layout.setBackgroundColor(item.getColor());
+        holder.txv_color_name.setText(String.format("#%06X", 0xFFFFFF & item.getColor()));
+        holder.txv_time.setText(item.getTime());
+        return view;
+    }
+
+    public void toggleSelection(int position) {
+        selectView(position, !mSelectedItemsIds.get(position));
+    }
+
+    public void removeSelection() {
+        mSelectedItemsIds = new SparseBooleanArray();
+        notifyDataSetChanged();
+    }
+
+    public void selectView(int position, boolean value) {
+        if (value)
+            mSelectedItemsIds.put(position, value);
+        else
+            mSelectedItemsIds.delete(position);
+        notifyDataSetChanged();
+    }
+
+    public int getSelectedCount() {
+        return mSelectedItemsIds.size();
+    }
+
+    public SparseBooleanArray getSelectedIds() {
+        return mSelectedItemsIds;
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+
+        mSelectedItemsIds.clear();
+        notifyDataSetChanged();
     }
 
     private class ViewHolder {
-
+        RelativeLayout layout;
+        TextView txv_color_name;
+        TextView txv_time;
     }
 }
