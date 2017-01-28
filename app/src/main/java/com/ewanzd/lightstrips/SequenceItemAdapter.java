@@ -32,6 +32,7 @@ public class SequenceItemAdapter extends ArrayAdapter<SequenceItem> {
             holder = new ViewHolder();
             view = inflater.inflate(R.layout.row_sequence, null);
             holder.layout = (RelativeLayout) view.findViewById(R.id.row_sequence);
+            holder.circle = (RelativeLayout)view.findViewById(R.id.color_fill_circle);
             holder.txv_color_name = (TextView) view.findViewById(R.id.color_name);
             holder.txv_time = (TextView) view.findViewById(R.id.time);
             view.setTag(holder);
@@ -40,9 +41,10 @@ public class SequenceItemAdapter extends ArrayAdapter<SequenceItem> {
         }
 
         SequenceItem item = getItem(position);
-        if(item.getColor() != 0) holder.layout.setBackgroundColor(item.getColor());
+        if(item.getColor() != 0) holder.circle.setBackgroundColor(item.getColor());
         holder.txv_color_name.setText(String.format("#%06X", 0xFFFFFF & item.getColor()));
-        holder.txv_time.setText(String.valueOf(item.getTime()));
+        String time_text = String.format("%1$d ms", item.getTime());
+        holder.txv_time.setText(time_text);
         return view;
     }
 
@@ -81,6 +83,7 @@ public class SequenceItemAdapter extends ArrayAdapter<SequenceItem> {
 
     private class ViewHolder {
         RelativeLayout layout;
+        RelativeLayout circle;
         TextView txv_color_name;
         TextView txv_time;
     }

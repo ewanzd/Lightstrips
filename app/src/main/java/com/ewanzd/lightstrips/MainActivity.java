@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
 
                 final int checkedCount = lv_sequence.getCheckedItemCount();
-                mode.setTitle(checkedCount + " Selected");
+                mode.setTitle(checkedCount + " ausgewählt");
                 adapter.toggleSelection(position);
             }
         });

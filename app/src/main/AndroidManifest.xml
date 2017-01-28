@@ -10,7 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/BrightTheme">
 
-        <activity android:name="com.ewanzd.lightstrips.MainActivity">
+        <activity android:name="com.ewanzd.lightstrips.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,13 +21,15 @@
 
         <activity
             android:name="com.ewanzd.lightstrips.SequenceActivity"
-            android:parentActivityName="com.ewanzd.lightstrips.MainActivity">
+            android:parentActivityName="com.ewanzd.lightstrips.MainActivity"
+            android:screenOrientation="portrait">
 
         </activity>
 
         <activity
             android:name="com.ewanzd.lightstrips.SequenceItemActivity"
-            android:parentActivityName="com.ewanzd.lightstrips.SequenceActivity">
+            android:parentActivityName="com.ewanzd.lightstrips.SequenceActivity"
+            android:screenOrientation="portrait">
 
         </activity>
     </application>

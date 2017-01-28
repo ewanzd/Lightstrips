@@ -12,6 +12,28 @@
         android:id="@+id/but_newSequenceItem"
         app:srcCompat="@android:drawable/ic_input_add" />
 
-    <include layout="@layout/content_sequence" />
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/edit_name_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp"
+        android:paddingBottom="10dp"
+        android:background="@color/colorPrimary">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Namen geben" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/edit_name_layout"
+        android:id="@+id/lv_sequenceitems"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

@@ -258,8 +258,8 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL(String.format(
                 "UPDATE %1$s " +
-                        "SET %2$s=\"%3$s\" " +
-                        "SET %4$s=\"%5$s\" " +
+                        "SET %2$s=%3$s, " +
+                        "SET %4$s=%5$s " +
                         "WHERE %6$s=%7$d",
                 TABLE_SEQUENCEITEM, COLUMN_SEQUENCEITEM_COLOR, item.getColor(),
                 COLUMN_SEQUENCEITEM_TIME, item.getTime(), COLUMN_SEQUENCEITEM_ID, item.getId()

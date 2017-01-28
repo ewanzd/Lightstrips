@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -24,7 +26,8 @@ public class SequenceActivity extends AppCompatActivity {
 
     private LightstripsDataBaseHandler dbHandler;
 
-    private EditText txe_sequenceName;
+    private TextInputLayout name_layout;
+    private TextInputEditText edit_name;
     private ListView lv_sequenceItems;
     private FloatingActionButton but_newSequence;
 
@@ -50,11 +53,15 @@ public class SequenceActivity extends AppCompatActivity {
         adapter = new SequenceItemAdapter(this, sequence.getItems());
 
         // set data to view
-        txe_sequenceName = (EditText)findViewById(R.id.txe_sequencename);
-        if(sequence != null) txe_sequenceName.setText(sequence.getName());
+        edit_name = (TextInputEditText)findViewById(R.id.edit_name);
+        name_layout = (TextInputLayout)findViewById(R.id.edit_name_layout);
+        lv_sequenceItems = (ListView) findViewById(R.id.lv_sequenceitems);
+        but_newSequence = (FloatingActionButton)findViewById(R.id.but_newSequenceItem);
+
+        // init EditText
+        if(sequence != null) edit_name.setText(sequence.getName());
 
         // init listview
-        lv_sequenceItems = (ListView) findViewById(R.id.lv_sequenceitems);
         lv_sequenceItems.setAdapter(adapter);
         lv_sequenceItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -107,13 +114,12 @@ public class SequenceActivity extends AppCompatActivity {
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
 
                 final int checkedCount = lv_sequenceItems.getCheckedItemCount();
-                mode.setTitle(checkedCount + " Selected");
+                mode.setTitle(checkedCount + " ausgewählt");
                 adapter.toggleSelection(position);
             }
         });
 
         // init FloatingActionButton
-        but_newSequence = (FloatingActionButton)findViewById(R.id.but_newSequenceItem);
         but_newSequence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,7 +131,7 @@ public class SequenceActivity extends AppCompatActivity {
     protected void initState(long sequenceId) {
         // get or create new sequence
         if(sequence == null && sequenceId == 0) {
-            sequence = new Sequence("default");
+            sequence = new Sequence("");
             dbHandler.addSequence(sequence);
         } else if (sequence == null) {
             sequence = dbHandler.getSequenceById(sequenceId);
@@ -136,7 +142,7 @@ public class SequenceActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        sequence.setName(txe_sequenceName.getText().toString());
+        sequence.setName(edit_name.getText().toString());
         dbHandler.updateSequence(sequence);
     }
 

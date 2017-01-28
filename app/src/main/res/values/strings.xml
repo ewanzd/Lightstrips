@@ -2,5 +2,6 @@
     <string name="app_name">Lightstrips</string>
     <string name="title_main">Sequences</string>
     <string name="title_activity_sequence">SequenceActivity</string>
-    <string name="delete">Delete</string>
+    <string name="delete">Löschen</string>
+    <string name="save">Speichern</string>
 </resources>

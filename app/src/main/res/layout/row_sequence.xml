@@ -2,28 +2,36 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/row_sequence"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/time"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="15dp"
-        android:textSize="40sp"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:text="Time" />
+        android:textSize="25sp"
+        android:text="Time"
+        android:layout_height="35dp"
+        android:layout_width="140dp" />
 
     <TextView
         android:id="@+id/color_name"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="55dp"
+        android:textSize="25sp"
+        android:text="Color"
         android:layout_toRightOf="@id/time"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="10dp"
+        android:layout_height="35dp" />
+
+    <RelativeLayout
+        android:id="@+id/color_fill_circle"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="20dp"
         android:layout_alignParentRight="true"
-        android:textSize="40sp"
-        android:text="Color" />
+        android:background="#000000">
+
+    </RelativeLayout>
 
 </RelativeLayout>
