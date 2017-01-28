@@ -2,9 +2,7 @@ package com.ewanzd.lightstrips;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -17,34 +15,37 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.ewanzd.lightstrips.core.LightstripsTimerHandler;
+import com.ewanzd.lightstrips.core.RestClient;
+import com.ewanzd.lightstrips.core.SiotSensor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Represent a sequence of colors to work with.
+ */
 public class SequenceActivity extends AppCompatActivity {
 
+    // database
     private LightstripsDataBaseHandler dbHandler;
 
+    // view
     private TextInputLayout name_layout;
     private TextInputEditText edit_name;
     private ListView lv_sequenceItems;
     private FloatingActionButton but_newSequence;
     private FloatingActionButton but_startSequence;
 
+    // data
     private long sequenceId;
     private Sequence sequence;
     private SequenceItemAdapter adapter;
 
+    // Extra for Intent
     public final static String EXTRA_SEQUENCEITEM_ID = "com.ewanzd.lightstrips.SEQUENCEITEM_ID";
 
     @Override
@@ -225,13 +226,13 @@ public class SequenceActivity extends AppCompatActivity {
         String centerId = LightstripsConfig.getConfigValue(this, LightstripsConfig.SERVER_SENSOR_CENTERID);
         String sensorId = LightstripsConfig.getConfigValue(this, LightstripsConfig.SERVER_SENSOR_SENSORID);
 
-        RestClient client = new RestClient();
+        RestClient client = new RestClient(this);
         SiotSensor sensor = new SiotSensor(Integer.parseInt(sensorPort), centerId, sensorId);
 
-        lightHandler = new LightstripsTimerHandler(serverAddress, client, sensor);
+        lightHandler = new LightstripsTimerHandler(this, serverAddress, client, sensor);
     }
 
-    protected class LightstripsTimerHandler {
+    /*protected class LightstripsTimerHandler {
 
         RestClient client;
         SiotSensor sensor;
@@ -360,5 +361,5 @@ public class SequenceActivity extends AppCompatActivity {
         void stop() {
             requestQueue.cancelAll(TAG);
         }
-    }
+    }*/
 }
