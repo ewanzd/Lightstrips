@@ -25,17 +25,17 @@ public class SiotSensor {
     }
 
     public String getUrlGetData() {
-        return String.format("getdata?centerUID=%1$s&sensorUID=%2$s",
+        return String.format("getdata?centerUID=%s&sensorUID=%s",
                 getCenterUid(), getSensorUid());
     }
 
     public String getUrlSetData(String message) {
-        return String.format("mqtt/request?topic=%1$s&message=%2$s",
+        return String.format("mqtt/request?topic=%s&message=%s",
                 getBody(MqttType.DAT), message);
     }
 
     public String getBody(MqttType type) {
-        return String.format("siot/%1$s/%2$s/%3$s",
+        return String.format("siot/%s/%s/%s",
                 type.toString(), getCenterUid(), getSensorUid());
     }
 

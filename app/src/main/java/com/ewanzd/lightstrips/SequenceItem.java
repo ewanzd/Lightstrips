@@ -1,6 +1,6 @@
 package com.ewanzd.lightstrips;
 
-public class SequenceItem {
+public class SequenceItem implements Comparable<SequenceItem> {
 
     private long id;
     private int color;
@@ -37,5 +37,11 @@ public class SequenceItem {
 
     public void setTime(int time) {
         this.time = time;
+    }
+
+    @Override
+    public int compareTo(SequenceItem item) {
+
+        return getTime()- item.getTime();
     }
 }

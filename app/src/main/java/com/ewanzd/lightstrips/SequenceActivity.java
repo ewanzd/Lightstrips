@@ -1,25 +1,21 @@
 package com.ewanzd.lightstrips;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,8 +27,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class SequenceActivity extends AppCompatActivity {
 
@@ -42,6 +39,7 @@ public class SequenceActivity extends AppCompatActivity {
     private TextInputEditText edit_name;
     private ListView lv_sequenceItems;
     private FloatingActionButton but_newSequence;
+    private FloatingActionButton but_startSequence;
 
     private long sequenceId;
     private Sequence sequence;
@@ -66,6 +64,7 @@ public class SequenceActivity extends AppCompatActivity {
         name_layout = (TextInputLayout)findViewById(R.id.edit_name_layout);
         lv_sequenceItems = (ListView) findViewById(R.id.lv_sequenceitems);
         but_newSequence = (FloatingActionButton)findViewById(R.id.but_newSequenceItem);
+        but_startSequence = (FloatingActionButton)findViewById(R.id.but_startSequence);
 
         // create adapter
         adapter = new SequenceItemAdapter(this, new ArrayList<SequenceItem>());
@@ -132,10 +131,21 @@ public class SequenceActivity extends AppCompatActivity {
         but_newSequence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lightHandler.run(sequence);
                 startSequenceItemActivity(sequence.getId(), 0);
             }
         });
+
+        but_startSequence.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lightHandler.run(sequence);
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         // init light handler
         initLightHandler();
@@ -153,9 +163,19 @@ public class SequenceActivity extends AppCompatActivity {
             sequence = dbHandler.getSequenceById(sequenceId);
         }
 
+        // sort list
+        List<SequenceItem> items = sequence.getItems();
+        Collections.sort(items, new Comparator<SequenceItem>() {
+            @Override
+            public int compare(SequenceItem item1, SequenceItem item2) {
+
+                return item1.compareTo(item2);
+            }
+        });
+
         // refresh adapter
         adapter.clear();
-        adapter.addAll(sequence.getItems());
+        adapter.addAll(items);
 
         // init EditText
         edit_name.setText(sequence.getName());
@@ -167,6 +187,13 @@ public class SequenceActivity extends AppCompatActivity {
 
         sequence.setName(edit_name.getText().toString());
         dbHandler.updateSequence(sequence);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        lightHandler.stop();
     }
 
     public void startSequenceItemActivity(long sequenceId, long sequenceItemId) {
@@ -213,6 +240,11 @@ public class SequenceActivity extends AppCompatActivity {
 
         Handler handler;
 
+        private int maxValue;
+        private int currentPos;
+        private int rotations;
+        private List<SequenceItem> items;
+
         public LightstripsTimerHandler(String serverAddress, RestClient client, SiotSensor sensor) {
             this.client = client;
             this.sensor = sensor;
@@ -224,14 +256,24 @@ public class SequenceActivity extends AppCompatActivity {
 
         void run(Sequence sequence) {
 
-            client.sendGet(makeUrl("Hat alles funktioniert 2.0"));
+            if(working) {
+                Toast.makeText(SequenceActivity.this, "Wird bereits ausgeführt", Toast.LENGTH_LONG).show();
+                return;
+            } else if(sequence.getItems().size() == 0) {
+                Toast.makeText(SequenceActivity.this, "Keine Elemente", Toast.LENGTH_LONG).show();
+                return;
+            }
 
-            /*if(!working) {
-                working = true;
-                handler.postDelayed(timerRunnable, 0);
-            } else {
-                Toast.makeText(SequenceActivity.this, "Wird bereits ausgeführt", Toast.LENGTH_LONG);
-            }*/
+            // init values
+            working = true;
+            currentPos = 0;
+            rotations = 0;
+            items = sequence.getItems();
+            maxValue = items.get(items.size() - 1).getTime(); // must be sorted
+
+            // start
+            Toast.makeText(SequenceActivity.this, "Wurde gestartet", Toast.LENGTH_SHORT).show();
+            handler.postDelayed(timerRunnable, 0);
         }
 
         void stop() {
@@ -243,11 +285,41 @@ public class SequenceActivity extends AppCompatActivity {
             return String.format("%1$s:%2$d/%3$s", serverAddress, sensor.getPort(), sensor.getUrlSetData(message));
         }
 
+        String toColorxy(int color) {
+            double red = Color.red(color) / 255f;
+            double blue = Color.blue(color) / 255f;
+            double green = Color.green(color) / 255f;
+
+            red = (red > 0.04045f) ? Math.pow((red + 0.055f) / (1.0f + 0.055f), 2.4f) : (red / 12.92f);
+            green = (green > 0.04045f) ? Math.pow((green + 0.055f) / (1.0f + 0.055f), 2.4f) : (green / 12.92f);
+            blue = (blue > 0.04045f) ? Math.pow((blue + 0.055f) / (1.0f + 0.055f), 2.4f) : (blue / 12.92f);
+
+            double X = red * 0.664511f + green * 0.154324f + blue * 0.162028f;
+            double Y = red * 0.283881f + green * 0.668433f + blue * 0.047685f;
+            double Z = red * 0.000088f + green * 0.072310f + blue * 0.986039f;
+
+            double x = X / (X + Y + Z);
+            double y = Y / (X + Y + Z);
+
+            return String.format("{\"on\":true, \"bri\":%d, \"xy\":[%.4f,%.4f]}",
+                    (int)(Y * 255), x, y);
+        }
+
         Runnable timerRunnable = new Runnable() {
             @Override
             public void run() {
-                // code
-                handler.postDelayed(this, 100);
+                SequenceItem item = items.get(currentPos);
+                if(rotations++ == item.getTime()) {
+                    currentPos++;
+                    String message = toColorxy(item.getColor());
+                    client.sendGet(makeUrl(message));
+                }
+
+                if(rotations <= maxValue) {
+                    handler.postDelayed(this, 100);
+                } else {
+                    working = false;
+                }
             }
         };
     }
@@ -268,13 +340,13 @@ public class SequenceActivity extends AppCompatActivity {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Toast.makeText(SequenceActivity.this, "Alles klar!", Toast.LENGTH_LONG).show();
+
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(SequenceActivity.this, "Fehlgeschlagen", Toast.LENGTH_LONG).show();
+                            Toast.makeText(SequenceActivity.this, "Fehlgeschlagen", Toast.LENGTH_SHORT).show();
                             error.printStackTrace();
                         }
                     }

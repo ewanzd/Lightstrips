@@ -33,18 +33,18 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         db.execSQL(String.format(
-                "CREATE TABLE %1$s (" +
-                "%2$s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "%3$s TEXT);", // name
+                "CREATE TABLE %s (" +
+                "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "%s TEXT);", // name
                 TABLE_SEQUENCE, COLUMN_SEQUENCE_ID, COLUMN_SEQUENCE_NAME
         ));
 
         db.execSQL(String.format(
                 "CREATE TABLE %1$s (" +
-                "%2$s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "%3$s INTEGER," + // color
-                "%4$s INTEGER," + // time
-                "%5$s INTEGER);", // sequence_id
+                "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "%s INTEGER," + // color
+                "%s INTEGER," + // time
+                "%s INTEGER);", // sequence_id
                 TABLE_SEQUENCEITEM, COLUMN_SEQUENCEITEM_ID, COLUMN_SEQUENCEITEM_COLOR,
                 COLUMN_SEQUENCEITEM_TIME, COLUMN_SEQUENCEITEM_SEQUENCES_ID
         ));
@@ -54,12 +54,12 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         db.execSQL(String.format(
-                "DROP TABLE IF EXISTS %1$s;",
+                "DROP TABLE IF EXISTS %s;",
                 TABLE_SEQUENCE
         ));
 
         db.execSQL(String.format(
-                "DROP TABLE IF EXISTS %1$s;",
+                "DROP TABLE IF EXISTS %s;",
                 TABLE_SEQUENCEITEM
         ));
 
@@ -84,9 +84,9 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL(String.format(
-                "UPDATE %1$s " +
-                "SET %2$s=\"%3$s\" " +
-                "WHERE %4$s=%5$d",
+                "UPDATE %s " +
+                "SET %s=\"%s\" " +
+                "WHERE %s=%d",
                 TABLE_SEQUENCE, COLUMN_SEQUENCE_NAME, sequence.getName(),
                 COLUMN_SEQUENCE_ID, sequence.getId()
         ));
@@ -101,7 +101,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
         }
 
         String query = String.format(
-                "DELETE FROM %1$s WHERE %2$s=\"%3$d\";",
+                "DELETE FROM %s WHERE %s=\"%d\";",
                 TABLE_SEQUENCE, COLUMN_SEQUENCE_ID, id
         );
 
@@ -114,7 +114,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
         List<Sequence> sequences = new ArrayList<>();
         String query = String.format(
-                "SELECT * FROM %1$s;",
+                "SELECT * FROM %s;",
                 TABLE_SEQUENCE
         );
 
@@ -146,7 +146,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
         Sequence sequence = null;
         String query = String.format(
-                "SELECT * FROM %1$s WHERE %2$s=\"%3$d\";",
+                "SELECT * FROM %s WHERE %s=\"%d\";",
                 TABLE_SEQUENCE, COLUMN_SEQUENCE_ID, id
         );
 
@@ -172,7 +172,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
         List<SequenceItem> sequenceItems = new ArrayList<>();
         String query = String.format(
-                "SELECT * FROM %1$s WHERE %2$s=\"%3$d\"",
+                "SELECT * FROM %s WHERE %s=\"%d\"",
                 TABLE_SEQUENCEITEM, COLUMN_SEQUENCEITEM_SEQUENCES_ID, sequenceId
         );
 
@@ -202,7 +202,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
         SequenceItem sequenceItem = null;
         String query = String.format(
-                "SELECT * FROM %1$s WHERE %2$s=\"%3$d\"",
+                "SELECT * FROM %s WHERE %s=\"%d\"",
                 TABLE_SEQUENCEITEM, COLUMN_SEQUENCEITEM_ID, sequenceItemId
         );
 
@@ -244,7 +244,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
     public void deleteSequenceItem(long id) {
 
         String query = String.format(
-                "DELETE FROM %1$s WHERE %2$s=\"%3$d\";",
+                "DELETE FROM %s WHERE %s=\"%d\";",
                 TABLE_SEQUENCEITEM, COLUMN_SEQUENCEITEM_ID, id
         );
 
@@ -257,9 +257,9 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL(String.format(
-                "UPDATE %1$s " +
-                        "SET %2$s=%3$s, %4$s=%5$s " +
-                        "WHERE %6$s=%7$d",
+                "UPDATE %s " +
+                        "SET %s=%d, %s=%d " +
+                        "WHERE %s=%d",
                 TABLE_SEQUENCEITEM, COLUMN_SEQUENCEITEM_COLOR, item.getColor(),
                 COLUMN_SEQUENCEITEM_TIME, item.getTime(), COLUMN_SEQUENCEITEM_ID, item.getId()
         ));

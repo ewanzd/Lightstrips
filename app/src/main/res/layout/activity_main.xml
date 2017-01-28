@@ -12,6 +12,11 @@
         android:id="@+id/but_newSequence"
         app:srcCompat="@android:drawable/ic_input_add" />
 
-    <include layout="@layout/content_main" />
+    <ListView
+        android:id="@+id/listview_sequences"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </ListView>
 
 </RelativeLayout>

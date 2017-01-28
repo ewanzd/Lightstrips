@@ -12,6 +12,14 @@
         android:id="@+id/but_newSequenceItem"
         app:srcCompat="@android:drawable/ic_input_add" />
 
+    <android.support.design.widget.FloatingActionButton
+        style="@style/button_new"
+        android:id="@+id/but_startSequence"
+        android:layout_alignParentBottom="false"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@id/but_newSequenceItem"
+        app:srcCompat="@android:drawable/ic_media_play" />
+
     <android.support.design.widget.TextInputLayout
         android:id="@+id/edit_name_layout"
         android:layout_width="match_parent"
