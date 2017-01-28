@@ -2,8 +2,10 @@ package com.ewanzd.lightstrips;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -19,8 +21,18 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SequenceActivity extends AppCompatActivity {
 
@@ -31,6 +43,7 @@ public class SequenceActivity extends AppCompatActivity {
     private ListView lv_sequenceItems;
     private FloatingActionButton but_newSequence;
 
+    private long sequenceId;
     private Sequence sequence;
     private SequenceItemAdapter adapter;
 
@@ -41,16 +54,12 @@ public class SequenceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sequence);
 
-        // init Database
-        dbHandler = new LightstripsDataBaseHandler(this);
-
         // load transfer data
         Intent intent = getIntent();
-        long sequenceId = intent.getLongExtra(MainActivity.EXTRA_SEQUENCE_ID, 0);
-        initState(sequenceId);
+        sequenceId = intent.getLongExtra(MainActivity.EXTRA_SEQUENCE_ID, 0);
 
-        // set sequences to adapter
-        adapter = new SequenceItemAdapter(this, sequence.getItems());
+        // init Database
+        dbHandler = new LightstripsDataBaseHandler(this);
 
         // set data to view
         edit_name = (TextInputEditText)findViewById(R.id.edit_name);
@@ -58,8 +67,8 @@ public class SequenceActivity extends AppCompatActivity {
         lv_sequenceItems = (ListView) findViewById(R.id.lv_sequenceitems);
         but_newSequence = (FloatingActionButton)findViewById(R.id.but_newSequenceItem);
 
-        // init EditText
-        if(sequence != null) edit_name.setText(sequence.getName());
+        // create adapter
+        adapter = new SequenceItemAdapter(this, new ArrayList<SequenceItem>());
 
         // init listview
         lv_sequenceItems.setAdapter(adapter);
@@ -123,19 +132,33 @@ public class SequenceActivity extends AppCompatActivity {
         but_newSequence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                lightHandler.run(sequence);
                 startSequenceItemActivity(sequence.getId(), 0);
             }
         });
+
+        // init light handler
+        initLightHandler();
     }
 
-    protected void initState(long sequenceId) {
-        // get or create new sequence
-        if(sequence == null && sequenceId == 0) {
-            sequence = new Sequence("");
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // load sequence
+        if(sequenceId == 0) {
+            sequence = new Sequence();
             dbHandler.addSequence(sequence);
-        } else if (sequence == null) {
+        } else {
             sequence = dbHandler.getSequenceById(sequenceId);
         }
+
+        // refresh adapter
+        adapter.clear();
+        adapter.addAll(sequence.getItems());
+
+        // init EditText
+        edit_name.setText(sequence.getName());
     }
 
     @Override
@@ -159,12 +182,111 @@ public class SequenceActivity extends AppCompatActivity {
 
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
-                final long result = data.getLongExtra(MainActivity.EXTRA_SEQUENCE_ID, 0);
-                initState(result);
+                sequenceId = data.getLongExtra(MainActivity.EXTRA_SEQUENCE_ID, 0);
             }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                initState(0);
+        }
+    }
+
+    // ========================== core functions timer ==============================
+
+    LightstripsTimerHandler lightHandler;
+
+    protected void initLightHandler() {
+
+        String serverAddress = LightstripsConfig.getConfigValue(this, LightstripsConfig.SERVER_REST_ADDRESS);
+        String sensorPort = LightstripsConfig.getConfigValue(this, LightstripsConfig.SERVER_SENSOR_PORT);
+        String centerId = LightstripsConfig.getConfigValue(this, LightstripsConfig.SERVER_SENSOR_CENTERID);
+        String sensorId = LightstripsConfig.getConfigValue(this, LightstripsConfig.SERVER_SENSOR_SENSORID);
+
+        RestClient client = new RestClient();
+        SiotSensor sensor = new SiotSensor(Integer.parseInt(sensorPort), centerId, sensorId);
+
+        lightHandler = new LightstripsTimerHandler(serverAddress, client, sensor);
+    }
+
+    protected class LightstripsTimerHandler {
+
+        RestClient client;
+        SiotSensor sensor;
+        String serverAddress;
+        boolean working;
+
+        Handler handler;
+
+        public LightstripsTimerHandler(String serverAddress, RestClient client, SiotSensor sensor) {
+            this.client = client;
+            this.sensor = sensor;
+            this.serverAddress = serverAddress;
+
+            handler = new Handler();
+            working = false;
+        }
+
+        void run(Sequence sequence) {
+
+            client.sendGet(makeUrl("Hat alles funktioniert 2.0"));
+
+            /*if(!working) {
+                working = true;
+                handler.postDelayed(timerRunnable, 0);
+            } else {
+                Toast.makeText(SequenceActivity.this, "Wird bereits ausgeführt", Toast.LENGTH_LONG);
+            }*/
+        }
+
+        void stop() {
+            handler.removeCallbacks(timerRunnable);
+            working = false;
+        }
+
+        String makeUrl(String message) {
+            return String.format("%1$s:%2$d/%3$s", serverAddress, sensor.getPort(), sensor.getUrlSetData(message));
+        }
+
+        Runnable timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // code
+                handler.postDelayed(this, 100);
             }
+        };
+    }
+
+    protected class RestClient {
+
+        final String TAG = "RestClient";
+        RequestQueue requestQueue;
+
+        RestClient() {
+            requestQueue = Volley.newRequestQueue(SequenceActivity.this);
+        }
+
+        void sendGet(String url) {
+
+            // Request a string response
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Toast.makeText(SequenceActivity.this, "Alles klar!", Toast.LENGTH_LONG).show();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(SequenceActivity.this, "Fehlgeschlagen", Toast.LENGTH_LONG).show();
+                            error.printStackTrace();
+                        }
+                    }
+            );
+            stringRequest.setTag(TAG);
+
+            // Add the request to the queue
+            requestQueue.add(stringRequest);
+        }
+
+        void stop() {
+            requestQueue.cancelAll(TAG);
         }
     }
 }
