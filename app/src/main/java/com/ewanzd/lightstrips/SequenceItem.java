@@ -1,5 +1,8 @@
 package com.ewanzd.lightstrips;
 
+/**
+ * Represent a part of sequence. You can save a rgb color as int and a time in ms.
+ */
 public class SequenceItem implements Comparable<SequenceItem> {
 
     private long id;

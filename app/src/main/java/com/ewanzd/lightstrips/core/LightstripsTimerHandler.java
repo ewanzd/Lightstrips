@@ -10,6 +10,9 @@ import com.ewanzd.lightstrips.SequenceItem;
 
 import java.util.List;
 
+/**
+ * Help to start a sequence of light with timer function.
+ */
 public class LightstripsTimerHandler {
 
     private RestClient client;
@@ -35,6 +38,10 @@ public class LightstripsTimerHandler {
         working = false;
     }
 
+    /**
+     * Start a new sequence. Can only run if no other sequence run now.
+     * @param sequence Sequence object of light.
+     */
     public void run(Sequence sequence) {
 
         if(working) {
@@ -57,16 +64,29 @@ public class LightstripsTimerHandler {
         handler.postDelayed(timerRunnable, 0);
     }
 
+    /**
+     * Stop running sequence of light.
+     */
     public void stop() {
         handler.removeCallbacks(timerRunnable);
         client.stop();
         working = false;
     }
 
+    /**
+     * Make url to send via REST.
+     * @param message Message to send.
+     * @return
+     */
     String makeUrl(String message) {
         return String.format("%1$s:%2$d/%3$s", serverAddress, sensor.getPort(), sensor.getUrlSetData(message));
     }
 
+    /**
+     * Conver to special format for phillips hue lights.
+     * @param color Color to convert.
+     * @return xy and brightness as json string.
+     */
     String toColorxy(int color) {
         double red = Color.red(color) / 255f;
         double blue = Color.blue(color) / 255f;

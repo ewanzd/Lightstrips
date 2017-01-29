@@ -10,6 +10,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+/**
+ * Help to connect to REST service.
+ */
 public class RestClient {
     private static final String TAG = "RestClient";
     private RequestQueue requestQueue;
@@ -20,6 +23,10 @@ public class RestClient {
         requestQueue = Volley.newRequestQueue(context);
     }
 
+    /**
+     * Send a REST request with GET.
+     * @param url Target url.
+     */
     public void sendGet(String url) {
 
         // Request a string response
@@ -44,6 +51,9 @@ public class RestClient {
         requestQueue.add(stringRequest);
     }
 
+    /**
+     * Stop all requests.
+     */
     public void stop() {
         requestQueue.cancelAll(TAG);
     }

@@ -3,6 +3,9 @@ package com.ewanzd.lightstrips;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represent a sequence of light. Its possible to give him a name.
+ */
 public class Sequence {
 
     private long id;

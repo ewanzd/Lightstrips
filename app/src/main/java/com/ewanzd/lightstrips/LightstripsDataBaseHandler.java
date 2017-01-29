@@ -5,11 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handler to save data to sqlite database.
+ */
 public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
@@ -34,17 +36,17 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
         db.execSQL(String.format(
                 "CREATE TABLE %s (" +
-                "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "%s INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "%s TEXT);", // name
                 TABLE_SEQUENCE, COLUMN_SEQUENCE_ID, COLUMN_SEQUENCE_NAME
         ));
 
         db.execSQL(String.format(
-                "CREATE TABLE %1$s (" +
-                "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "%s INTEGER," + // color
-                "%s INTEGER," + // time
-                "%s INTEGER);", // sequence_id
+                "CREATE TABLE %s (" +
+                        "%s INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "%s INTEGER, " + // color
+                        "%s INTEGER, " + // time
+                        "%s INTEGER);", // sequence_id
                 TABLE_SEQUENCEITEM, COLUMN_SEQUENCEITEM_ID, COLUMN_SEQUENCEITEM_COLOR,
                 COLUMN_SEQUENCEITEM_TIME, COLUMN_SEQUENCEITEM_SEQUENCES_ID
         ));
@@ -95,7 +97,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
     public void deleteSequence(long id) {
 
-        // delete all items from sequence
+        // delete all items of the sequence
         for (SequenceItem item: getSequenceItemsBySequenceId(id)) {
             deleteSequenceItem(item.getId());
         }
@@ -118,6 +120,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
                 TABLE_SEQUENCE
         );
 
+        // save all rows to object
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
@@ -172,7 +175,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
 
         List<SequenceItem> sequenceItems = new ArrayList<>();
         String query = String.format(
-                "SELECT * FROM %s WHERE %s=\"%d\"",
+                "SELECT * FROM %s WHERE %s=%d",
                 TABLE_SEQUENCEITEM, COLUMN_SEQUENCEITEM_SEQUENCES_ID, sequenceId
         );
 
