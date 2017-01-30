@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".SequenceActivity"
+    tools:context="com.ewanzd.lightstrips.SequenceActivity"
     android:id="@+id/activity_sequence"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -32,16 +32,16 @@
             android:id="@+id/edit_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Namen geben"
+            android:hint="@string/setName"
             android:inputType="text"/>
 
     </android.support.design.widget.TextInputLayout>
 
     <ListView
+        android:id="@+id/lv_sequenceitems"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/edit_name_layout"
-        android:id="@+id/lv_sequenceitems"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 

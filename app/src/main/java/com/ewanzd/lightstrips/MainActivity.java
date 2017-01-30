@@ -18,24 +18,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Start activity of lightstrips.
  */
 public class MainActivity extends AppCompatActivity {
 
+    // database handler
     private LightstripsDataBaseHandler dbHandler;
 
+    // data
     private SequenceAdapter adapter;
     private List<Sequence> sequences;
 
+    // view elements
     private ListView lv_sequence;
     private FloatingActionButton but_newSequence;
 
+    // for Intent
     public final static String EXTRA_SEQUENCE_ID = "com.ewanzd.lightstrips.SEQUENCE_ID";
 
-    /**
-     *
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +44,15 @@ public class MainActivity extends AppCompatActivity {
         // init Database
         dbHandler = new LightstripsDataBaseHandler(this);
 
+        // get view elements
+        lv_sequence = (ListView) findViewById(R.id.listview_sequences);
+        but_newSequence = (FloatingActionButton)findViewById(R.id.but_newSequence);
+
         // set sequences to adapter
         sequences = new ArrayList<>();
         adapter = new SequenceAdapter(this, sequences);
 
         // init ListView
-        lv_sequence = (ListView) findViewById(R.id.listview_sequences);
         lv_sequence.setAdapter(adapter);
         lv_sequence.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -101,14 +104,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
 
-                final int checkedCount = lv_sequence.getCheckedItemCount();
-                mode.setTitle(checkedCount + " ausgewählt");
+                String checkedStr = String.format("%d %s",
+                        lv_sequence.getCheckedItemCount(),
+                        getResources().getString(R.string.selected));
+                mode.setTitle(checkedStr);
                 adapter.toggleSelection(position);
             }
         });
 
         // init FloatingActionButton
-        but_newSequence = (FloatingActionButton)findViewById(R.id.but_newSequence);
         but_newSequence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * Get all sequences from database and reload view.
      */
     public void reloadSequences() {
         // load sequences
@@ -145,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param sequenceId
+     * Start SewuenceActivity with sequenceId.
+     * @param sequenceId Sequence to show in the new Activity.
      */
     public void startSequenceActivity(long sequenceId) {
         Intent newActivity = new Intent(MainActivity.this, SequenceActivity.class);

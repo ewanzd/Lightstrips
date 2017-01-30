@@ -122,8 +122,10 @@ public class SequenceActivity extends AppCompatActivity {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
 
-                final int checkedCount = lv_sequenceItems.getCheckedItemCount();
-                mode.setTitle(checkedCount + " ausgewählt");
+                String checkedStr = String.format("%d %s",
+                        lv_sequenceItems.getCheckedItemCount(),
+                        getResources().getString(R.string.selected));
+                mode.setTitle(checkedStr);
                 adapter.toggleSelection(position);
             }
         });
@@ -219,6 +221,9 @@ public class SequenceActivity extends AppCompatActivity {
 
     LightstripsTimerHandler lightHandler;
 
+    /**
+     * Get data from config and initialize light handler.
+     */
     protected void initLightHandler() {
 
         String serverAddress = LightstripsConfig.getConfigValue(this, LightstripsConfig.SERVER_REST_ADDRESS);
@@ -231,135 +236,4 @@ public class SequenceActivity extends AppCompatActivity {
 
         lightHandler = new LightstripsTimerHandler(this, serverAddress, client, sensor);
     }
-
-    /*protected class LightstripsTimerHandler {
-
-        RestClient client;
-        SiotSensor sensor;
-        String serverAddress;
-        boolean working;
-
-        Handler handler;
-
-        private int maxValue;
-        private int currentPos;
-        private int rotations;
-        private List<SequenceItem> items;
-
-        public LightstripsTimerHandler(String serverAddress, RestClient client, SiotSensor sensor) {
-            this.client = client;
-            this.sensor = sensor;
-            this.serverAddress = serverAddress;
-
-            handler = new Handler();
-            working = false;
-        }
-
-        void run(Sequence sequence) {
-
-            if(working) {
-                Toast.makeText(SequenceActivity.this, "Wird bereits ausgeführt", Toast.LENGTH_LONG).show();
-                return;
-            } else if(sequence.getItems().size() == 0) {
-                Toast.makeText(SequenceActivity.this, "Keine Elemente", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            // init values
-            working = true;
-            currentPos = 0;
-            rotations = 0;
-            items = sequence.getItems();
-            maxValue = items.get(items.size() - 1).getTime(); // must be sorted
-
-            // start
-            Toast.makeText(SequenceActivity.this, "Wurde gestartet", Toast.LENGTH_SHORT).show();
-            handler.postDelayed(timerRunnable, 0);
-        }
-
-        void stop() {
-            handler.removeCallbacks(timerRunnable);
-            working = false;
-        }
-
-        String makeUrl(String message) {
-            return String.format("%1$s:%2$d/%3$s", serverAddress, sensor.getPort(), sensor.getUrlSetData(message));
-        }
-
-        String toColorxy(int color) {
-            double red = Color.red(color) / 255f;
-            double blue = Color.blue(color) / 255f;
-            double green = Color.green(color) / 255f;
-
-            red = (red > 0.04045f) ? Math.pow((red + 0.055f) / (1.0f + 0.055f), 2.4f) : (red / 12.92f);
-            green = (green > 0.04045f) ? Math.pow((green + 0.055f) / (1.0f + 0.055f), 2.4f) : (green / 12.92f);
-            blue = (blue > 0.04045f) ? Math.pow((blue + 0.055f) / (1.0f + 0.055f), 2.4f) : (blue / 12.92f);
-
-            double X = red * 0.664511f + green * 0.154324f + blue * 0.162028f;
-            double Y = red * 0.283881f + green * 0.668433f + blue * 0.047685f;
-            double Z = red * 0.000088f + green * 0.072310f + blue * 0.986039f;
-
-            double x = X / (X + Y + Z);
-            double y = Y / (X + Y + Z);
-
-            return String.format("{\"on\":true, \"bri\":%d, \"xy\":[%.4f,%.4f]}",
-                    (int)(Y * 255), x, y);
-        }
-
-        Runnable timerRunnable = new Runnable() {
-            @Override
-            public void run() {
-                SequenceItem item = items.get(currentPos);
-                if(rotations++ == item.getTime()) {
-                    currentPos++;
-                    String message = toColorxy(item.getColor());
-                    client.sendGet(makeUrl(message));
-                }
-
-                if(rotations <= maxValue) {
-                    handler.postDelayed(this, 100);
-                } else {
-                    working = false;
-                }
-            }
-        };
-    }
-
-    protected class RestClient {
-
-        final String TAG = "RestClient";
-        RequestQueue requestQueue;
-
-        RestClient() {
-            requestQueue = Volley.newRequestQueue(SequenceActivity.this);
-        }
-
-        void sendGet(String url) {
-
-            // Request a string response
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(SequenceActivity.this, "Fehlgeschlagen", Toast.LENGTH_SHORT).show();
-                            error.printStackTrace();
-                        }
-                    }
-            );
-            stringRequest.setTag(TAG);
-
-            // Add the request to the queue
-            requestQueue.add(stringRequest);
-        }
-
-        void stop() {
-            requestQueue.cancelAll(TAG);
-        }
-    }*/
 }

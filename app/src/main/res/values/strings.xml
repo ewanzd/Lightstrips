@@ -4,4 +4,11 @@
     <string name="title_activity_sequence">SequenceActivity</string>
     <string name="delete">Löschen</string>
     <string name="save">Speichern</string>
+    <string name="setName">Namen geben</string>
+    <string name="setTime">Zeit (100 ms)</string>
+    <string name="setColor">Farbe (zB #FFFFFF)</string>
+    <string name="selected">ausgewählt</string>
+    <string name="error_mustbenumber">Eingabe muss eine Zahl sein</string>
+    <string name="error_atleastnull">Eingabe muss mindestens 0 sein</string>
+    <string name="error_invalidformat">Ungültiges Format</string>
 </resources>

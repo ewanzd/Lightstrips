@@ -128,6 +128,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
             long id = cursor.getLong(cursor.getColumnIndex(COLUMN_SEQUENCE_ID));
             String name = cursor.getString(cursor.getColumnIndex(COLUMN_SEQUENCE_NAME));
 
+            // put data in object
             Sequence seq = new Sequence();
             seq.setId(id);
             seq.setName(name);
@@ -138,6 +139,7 @@ public class LightstripsDataBaseHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
 
+        // get all items of sequence
         for (Sequence sequence: sequences) {
             sequence.setItems(getSequenceItemsBySequenceId(sequence.getId()));
         }

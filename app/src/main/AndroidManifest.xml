@@ -10,7 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/BrightTheme">
 
-        <activity android:name="com.ewanzd.lightstrips.MainActivity"
+        <activity
+            android:name="com.ewanzd.lightstrips.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

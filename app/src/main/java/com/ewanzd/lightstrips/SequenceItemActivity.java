@@ -64,12 +64,12 @@ public class SequenceItemActivity extends AppCompatActivity {
                 // check input time
                 String strtime = edit_time.getText().toString();
                 if(!isInteger(strtime, 10)) {
-                    time_layout.setError("Eingabe muss eine Zahl sein");
+                    time_layout.setError(getResources().getString(R.string.error_mustbenumber));
                     allSuccessful = false;
                 } else {
                     int time = Integer.parseInt(edit_time.getText().toString());
                     if(time < 0) {
-                        time_layout.setError("Eingabe muss mindestens 0 sein");
+                        time_layout.setError(getResources().getString(R.string.error_atleastnull));
                         allSuccessful = false;
                     } else {
                         sequenceItem.setTime(time);
@@ -81,7 +81,7 @@ public class SequenceItemActivity extends AppCompatActivity {
                     int color = Color.parseColor(edit_color.getText().toString());
                     sequenceItem.setColor(color);
                 } catch (IllegalArgumentException ex) {
-                    color_layout.setError("Ungültiges Format");
+                    color_layout.setError(getResources().getString(R.string.error_invalidformat));
                     allSuccessful = false;
                 }
 
