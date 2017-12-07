@@ -1,6 +1,6 @@
 # Lightstrips
 
-My first java app for android to control lightstrips from [philips hue](www2.meethue.com/en-us/products/lightstrips). 
+My first java app for android to control lightstrips in my home, which are triggered by raspberry pi. 
 With this app you can define a sentence of light with different colors in an 
 interval of your choice. 
 
